@@ -1,12 +1,22 @@
-import { Fragment } from 'react';
-import { Counter, Toggle } from './components';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { Counter } from './components';
+
+import { increment, decrement } from './redux/actions';
 
 export const App = () => {
+  const counter = useSelector((state) => state.counter);
+  const dispatch = useDispatch();
+
+  const incrementButtonHandler = () => dispatch(increment());
+
+  const decrementButtonHandler = () => dispatch(decrement());
+
   return (
-    <Fragment>
-      <Counter />
-      <Toggle />
-    </Fragment>
+    <Counter
+      decrementButtonHandler={decrementButtonHandler}
+      incrementButtonHandler={incrementButtonHandler}
+      counter={counter}
+    />
   );
 };
-// git remote add origin https://github.com/Gui-lher-me/learning-redux.git
