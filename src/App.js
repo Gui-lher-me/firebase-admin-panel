@@ -1,6 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Counter } from './components';
+import { Paginate } from './react-paginate/Paginate';
 
 import { increment, decrement } from './redux/actions';
 
@@ -19,4 +20,5 @@ export const App = () => {
       counter={counter}
     />
   );
+  // return <Paginate />;
 };
