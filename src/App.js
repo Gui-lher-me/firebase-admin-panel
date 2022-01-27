@@ -1,24 +1,44 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useFetch } from './components/hooks/useFetch';
+import { AddDeveloper } from './components/UIElements/AddDeveloper';
+import { DevelopersList } from './components/UIElements/DevelopersList';
 
-import { Counter } from './components';
-import { Paginate } from './react-paginate/Paginate';
-
-import { increment, decrement } from './redux/actions';
+const url = 'https://frontly-acb60-default-rtdb.firebaseio.com/developers.json';
 
 export const App = () => {
-  const counter = useSelector((state) => state.counter);
-  const dispatch = useDispatch();
+  const { data: developers, isLoading } = useFetch(url);
+  const [developer, setDeveloper] = useState('');
 
-  const incrementButtonHandler = () => dispatch(increment());
-
-  const decrementButtonHandler = () => dispatch(decrement());
+  const addDeveloperSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ name: developer }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      console.log('Dev created successfully');
+    } catch (e) {
+      console.log(e);
+    }
+    setDeveloper('');
+  };
 
   return (
-    <Counter
-      decrementButtonHandler={decrementButtonHandler}
-      incrementButtonHandler={incrementButtonHandler}
-      counter={counter}
-    />
+    <>
+      <AddDeveloper
+        setDeveloper={setDeveloper}
+        addDeveloperSubmitHandler={addDeveloperSubmitHandler}
+        developer={developer}
+      />
+      {isLoading && developers.length === 0 && <p>Loading...</p>}
+      {!isLoading && developers.length === 0 && <p>No developers found!</p>}
+      {!isLoading && developers.length > 0 && (
+        <DevelopersList developers={developers} />
+      )}
+    </>
   );
-  // return <Paginate />;
 };
