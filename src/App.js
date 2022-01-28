@@ -1,43 +1,41 @@
-import { useState } from 'react';
-import { useFetch } from './components/hooks/useFetch';
-import { AddDeveloper } from './components/UIElements/AddDeveloper';
-import { DevelopersList } from './components/UIElements/DevelopersList';
-
-const url = 'https://frontly-acb60-default-rtdb.firebaseio.com/developers.json';
+import { useEffect, useState } from 'react';
+import { useHttp } from './components/hooks/useHttp';
+import { AddProduct } from './components/UIElements/AddProduct';
+import { ProductList } from './components/UIElements/ProductList';
+import { GlobalStyle } from './globalStyles';
 
 export const App = () => {
-  const { data: developers, isLoading } = useFetch(url);
-  const [developer, setDeveloper] = useState('');
+  const { isLoading, hasError: error, sendRequest, data: products } = useHttp();
 
-  const addDeveloperSubmitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(url, {
+  const addProduct = (product) => {
+    sendRequest(
+      'https://frontly-acb60-default-rtdb.firebaseio.com/products.json',
+      {
         method: 'POST',
-        body: JSON.stringify({ name: developer }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
-      console.log('Dev created successfully');
-    } catch (e) {
-      console.log(e);
-    }
-    setDeveloper('');
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product: product }),
+      }
+    );
+  };
+
+  const deleteProduct = (id) => {
+    sendRequest(
+      `https://frontly-acb60-default-rtdb.firebaseio.com/products/${id}.json`,
+      { method: 'DELETE' }
+    );
   };
 
   return (
     <>
-      <AddDeveloper
-        setDeveloper={setDeveloper}
-        addDeveloperSubmitHandler={addDeveloperSubmitHandler}
-        developer={developer}
-      />
-      {isLoading && developers.length === 0 && <p>Loading...</p>}
-      {!isLoading && developers.length === 0 && <p>No developers found!</p>}
-      {!isLoading && developers.length > 0 && (
-        <DevelopersList developers={developers} />
+      <GlobalStyle />
+      <AddProduct addProduct={addProduct} />
+      {isLoading && !error && products.length === 0 && <p>Loading...</p>}
+      {!isLoading && error && products.length === 0 && <p>{error}</p>}
+      {!isLoading && !error && products.length === 0 && (
+        <p>No products found!</p>
+      )}
+      {!isLoading && !error && products.length > 0 && (
+        <ProductList onDelete={deleteProduct} products={products} />
       )}
     </>
   );
