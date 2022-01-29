@@ -3,41 +3,31 @@ import { useState, useCallback } from 'react';
 export const useHttp = () => {
   const [hasError, setHasError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState([]);
 
-  const sendRequest = useCallback((url, options) => {
+  const sendRequest = useCallback((options, applyData) => {
     setIsLoading(true);
-    fetch(url, {
-      method: options?.method,
-      body: options?.body,
-      headers: new Headers(options?.headers),
+    fetch(options.url, {
+      method: options.method ? options.method : 'GET',
+      headers: options.headers ? new Headers(options?.headers) : {},
+      body: options.body ? JSON.stringify(options.body) : null,
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Something went wrong!');
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Request failed!');
         }
-        return response.json();
+        return res.json();
       })
-      .then((responseData) => {
-        const loadedData = [];
-        for (const item in responseData) {
-          loadedData.push({
-            id: item,
-            product: responseData[item].product,
-          });
-        }
-        setIsLoading(false);
-        setData(loadedData);
+      .then((data) => {
+        applyData(data);
       })
       .catch((error) => {
-        setIsLoading(false);
-        setHasError(error.message);
-      });
+        setHasError(error.message || 'Something went wrong!');
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   return {
     isLoading,
-    data,
     hasError,
     sendRequest,
   };
