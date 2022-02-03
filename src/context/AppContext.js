@@ -4,5 +4,5 @@ export const AppContext = createContext({
   addTable: () => {},
   error: null,
   isLoading: true,
-  fields: [],
+  rows: [],
 });

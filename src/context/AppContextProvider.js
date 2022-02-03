@@ -1,46 +1,58 @@
 import { useEffect, useState } from 'react';
-import { AppContext } from './AppContext';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useHttp } from '../hooks/useHttp';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useHttp } from '../hooks/useHttp';
+import { AppContext } from './AppContext';
+
+const transformData = (data) => {
+  const rows = [];
+  for (const item in data) {
+    rows.push({
+      id: item,
+      name: data[item].name, // hard coded
+      age: data[item].age, // hard coded
+    });
+  }
+  return rows;
+};
 
 export const AppContextProvider = ({ children }) => {
   const { sendHttpRequest, hasError: error, isLoading } = useHttp();
-  const [fields, setFields] = useState();
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
     let source = axios.CancelToken.source();
-    const fetchFields = async () => {
+    // I am only fetching the users table for now
+    (async () => {
       await sendHttpRequest(
         {
-          url: `https://frontly-acb60-default-rtdb.firebaseio.com/products.json`,
+          url: `https://frontly-acb60-default-rtdb.firebaseio.com/users.json`,
           cancelToken: source.token,
         },
         (data) => {
-          const loadedData = [];
-          for (const item in data) {
-            loadedData.push({
-              id: item,
-              name: data[item].name,
-              price: data[item].price,
-            });
-          }
-          setFields(loadedData);
+          setRows(transformData(data));
         }
       );
-    };
-    fetchFields();
-    return () => {
-      source.cancel();
-    };
-  }, []);
+    })();
+    return () => source.cancel();
+  }, [sendHttpRequest]);
 
   const addTable = async (fields, table) => {
     const data = fields.reduce(
-      (obj, item) => Object.assign(obj, { [item.field]: item.value }),
+      (obj, item) => Object.assign(obj, { [item.column]: item.value }),
       {}
     );
+    // Add a table of tables
+    await sendHttpRequest(
+      {
+        url: `https://frontly-acb60-default-rtdb.firebaseio.com/tables.json`,
+        headers: { 'Content-Type': 'application/json' },
+        data: { name: table },
+        method: 'post',
+      },
+      (response) => console.log(response)
+    );
+    // Add a table
     await sendHttpRequest(
       {
         url: `https://frontly-acb60-default-rtdb.firebaseio.com/${table}.json`,
@@ -48,16 +60,16 @@ export const AppContextProvider = ({ children }) => {
         data: data,
         method: 'post',
       },
-      (data) => data
+      (response) => console.log(response)
     );
     toast.success('Table create successfully.');
   };
 
   const context = {
     addTable,
-    error: error,
-    isLoading: isLoading,
-    fields: fields,
+    error,
+    isLoading,
+    rows,
   };
 
   return <AppContext.Provider value={context}>{children}</AppContext.Provider>;

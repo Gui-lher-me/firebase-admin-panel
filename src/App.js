@@ -1,14 +1,15 @@
 import { AppContextProvider } from './context/AppContextProvider';
 import { NewTable } from './components/NewTable';
+import { ShowTables } from './components/ShowTables';
 import { ToastContainer } from 'react-toastify';
-import { FieldList } from './components/FieldList';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const App = () => {
   return (
     <AppContextProvider>
       <ToastContainer />
       <NewTable />
-      <FieldList />
+      <ShowTables />
     </AppContextProvider>
   );
 };
