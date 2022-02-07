@@ -3,9 +3,10 @@ import axios from 'axios';
 
 export const useHttp = () => {
   const [hasError, setHasError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const sendHttpRequest = useCallback(async (options, applyData) => {
+    setIsLoading(true);
     try {
       const res = await axios({
         url: options.url,

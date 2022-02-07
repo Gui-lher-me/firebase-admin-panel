@@ -6,7 +6,7 @@ import { checkEmptyFields } from '../util/validators';
 const initialState = { column: '', value: '' };
 
 export const NewTable = () => {
-  const { addTable } = useContext(AppContext);
+  const { addTablesAndRows } = useContext(AppContext);
   const [table, setTable] = useState('');
   const [formValues, setFormValues] = useState([initialState]);
 
@@ -16,7 +16,7 @@ export const NewTable = () => {
       toast.warning('Please fill in all the required fields*.');
       return;
     }
-    addTable(formValues, table);
+    addTablesAndRows(formValues, table);
     setFormValues([{ column: '', value: '' }]);
     setTable('');
   };

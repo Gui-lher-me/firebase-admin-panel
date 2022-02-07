@@ -1,8 +1,11 @@
 import { createContext } from 'react';
 
 export const AppContext = createContext({
-  addTable: () => {},
   error: null,
   isLoading: true,
+  tables: [],
   rows: [],
+  getRows: () => {},
+  addTablesAndRows: () => {},
+  deleteRow: () => {},
 });
