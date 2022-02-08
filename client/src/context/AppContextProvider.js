@@ -13,7 +13,7 @@ import { db } from '../firebase.config';
 import { useHttp } from '../hooks/useHttp';
 
 export const AppContextProvider = ({ children }) => {
-  const { sendHttpRequest, hasError: error, isLoading } = useHttp();
+  const { sendHttpRequest, isLoading, error } = useHttp();
   const [tables, setTables] = useState([]);
   const [rows, setRows] = useState([]);
 

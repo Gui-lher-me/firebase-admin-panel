@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import axios from 'axios';
 
 export const useHttp = () => {
-  const [hasError, setHasError] = useState(null);
+  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const sendHttpRequest = useCallback(async (options, applyData) => {
@@ -22,16 +22,16 @@ export const useHttp = () => {
     } catch (error) {
       if ((error.name = 'AbortError')) {
         console.log('Fetch is cancelled!');
-      } else {
-        setIsLoading(false);
-        setHasError(error.message || 'Something went wrong!');
+        return;
       }
+      setIsLoading(false);
+      setError(error.message || 'Something went wrong!');
     }
   }, []);
 
   return {
     isLoading,
-    hasError,
+    error,
     sendHttpRequest,
   };
 };
