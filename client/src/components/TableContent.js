@@ -18,13 +18,13 @@ export const TableContent = () => {
           </tr>
         </thead>
         <tbody>
-          {rows.map((doc) => {
+          {rows.map((row) => {
             return (
-              <tr key={doc.id}>
-                {doc.values.map((value, id) => {
+              <tr key={row.id}>
+                {row.values.map((value, id) => {
                   return (
                     <td
-                      onClick={deleteRow.bind(null, doc.id, doc.table)}
+                      onClick={deleteRow.bind(null, row.id, row.table)}
                       style={{ ...styles, cursor: 'pointer' }}
                       key={id}
                     >

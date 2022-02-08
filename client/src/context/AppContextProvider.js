@@ -44,7 +44,6 @@ export const AppContextProvider = ({ children }) => {
             table,
           });
         });
-        console.log(loadedData); // a problem
         setRows(loadedData);
       })
       .catch((error) => console.log(error));
@@ -75,7 +74,7 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const deleteRow = (id, table) => {
-    const newRows = rows.filter((doc) => doc.id !== id);
+    const newRows = rows.filter((row) => row.id !== id);
     deleteDoc(doc(db, table, id))
       .then(() => setRows(newRows))
       .catch((error) => console.log(error));
