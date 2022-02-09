@@ -20,8 +20,8 @@ export const useHttp = () => {
       setIsLoading(false);
       applyData(res.data);
     } catch (error) {
-      if ((error.name = 'AbortError')) {
-        console.log('Fetch is cancelled!');
+      if (error.name === 'AbortError') {
+        console.log('Fetch has been cancelled!');
         return;
       }
       setIsLoading(false);
